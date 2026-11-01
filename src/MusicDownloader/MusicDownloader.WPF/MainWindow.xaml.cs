@@ -129,6 +129,9 @@ namespace MusicDownloader.WPF
                     MessageBoxButton.OK,
                     MessageBoxImage.Information);
 
+                VkStatusText.Text = "Авторизован";
+                LogoutButton.Visibility = Visibility.Visible;
+
                 OpenVkMusic();
             }
             catch (Exception ex)
@@ -200,6 +203,40 @@ namespace MusicDownloader.WPF
 
             HomeContent.Visibility =
                 Visibility.Visible;
+        }
+
+        /// <summary>
+        /// Выход из вк
+        /// в главное меню.
+        /// </summary>
+        private async void LogoutButton_Click(object sender, RoutedEventArgs e)
+        {
+            LogoutButton.IsEnabled = false;
+
+            try
+            {
+                await _vkTokenStorage.DeleteAsync();
+
+                VkStatusText.Text = "Не авторизован";
+                LogoutButton.Visibility = Visibility.Collapsed;
+
+                MainContent.Content = null;
+                MainContent.Visibility = Visibility.Collapsed;
+
+                HomeContent.Visibility = Visibility.Visible;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Не удалось выйти из аккаунта: {ex.Message}",
+                    "Ошибка",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+            finally
+            {
+                LogoutButton.IsEnabled = true;
+            }
         }
     }
 }

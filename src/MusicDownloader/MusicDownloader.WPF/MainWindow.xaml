@@ -17,31 +17,16 @@
         <Style x:Key="PrimaryButton"
                TargetType="Button">
 
-            <Setter Property="Foreground"
-                    Value="White"/>
-
-            <Setter Property="Background"
-                    Value="#2688EB"/>
-
-            <Setter Property="BorderThickness"
-                    Value="0"/>
-
-            <Setter Property="FontSize"
-                    Value="14"/>
-
-            <Setter Property="FontWeight"
-                    Value="SemiBold"/>
-
-            <Setter Property="Padding"
-                    Value="22,12"/>
-
-            <Setter Property="Cursor"
-                    Value="Hand"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#2688EB"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="22,12"/>
+            <Setter Property="Cursor" Value="Hand"/>
 
             <Setter Property="Template">
-
                 <Setter.Value>
-
                     <ControlTemplate TargetType="Button">
 
                         <Border x:Name="ButtonBorder"
@@ -57,39 +42,28 @@
 
                         <ControlTemplate.Triggers>
 
-                            <Trigger Property="IsMouseOver"
-                                     Value="True">
-
+                            <Trigger Property="IsMouseOver" Value="True">
                                 <Setter TargetName="ButtonBorder"
                                         Property="Background"
                                         Value="#1E78D3"/>
-
                             </Trigger>
 
-                            <Trigger Property="IsPressed"
-                                     Value="True">
-
+                            <Trigger Property="IsPressed" Value="True">
                                 <Setter TargetName="ButtonBorder"
                                         Property="Background"
                                         Value="#1769BD"/>
-
                             </Trigger>
 
-                            <Trigger Property="IsEnabled"
-                                     Value="False">
-
+                            <Trigger Property="IsEnabled" Value="False">
                                 <Setter TargetName="ButtonBorder"
                                         Property="Opacity"
                                         Value="0.5"/>
-
                             </Trigger>
 
                         </ControlTemplate.Triggers>
 
                     </ControlTemplate>
-
                 </Setter.Value>
-
             </Setter>
 
         </Style>
@@ -100,31 +74,16 @@
         <Style x:Key="ProviderButton"
                TargetType="Button">
 
-            <Setter Property="Background"
-                    Value="White"/>
-
-            <Setter Property="Foreground"
-                    Value="#172033"/>
-
-            <Setter Property="BorderBrush"
-                    Value="#DCE5F0"/>
-
-            <Setter Property="BorderThickness"
-                    Value="1"/>
-
-            <Setter Property="Padding"
-                    Value="18,14"/>
-
-            <Setter Property="FontSize"
-                    Value="14"/>
-
-            <Setter Property="Cursor"
-                    Value="Hand"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="#172033"/>
+            <Setter Property="BorderBrush" Value="#DCE5F0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="18,14"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Cursor" Value="Hand"/>
 
             <Setter Property="Template">
-
                 <Setter.Value>
-
                     <ControlTemplate TargetType="Button">
 
                         <Border x:Name="ProviderBorder"
@@ -142,8 +101,7 @@
 
                         <ControlTemplate.Triggers>
 
-                            <Trigger Property="IsMouseOver"
-                                     Value="True">
+                            <Trigger Property="IsMouseOver" Value="True">
 
                                 <Setter TargetName="ProviderBorder"
                                         Property="BorderBrush"
@@ -155,30 +113,22 @@
 
                             </Trigger>
 
-                            <Trigger Property="IsPressed"
-                                     Value="True">
-
+                            <Trigger Property="IsPressed" Value="True">
                                 <Setter TargetName="ProviderBorder"
                                         Property="Background"
                                         Value="#EDF6FF"/>
-
                             </Trigger>
 
-                            <Trigger Property="IsEnabled"
-                                     Value="False">
-
+                            <Trigger Property="IsEnabled" Value="False">
                                 <Setter TargetName="ProviderBorder"
                                         Property="Opacity"
                                         Value="0.55"/>
-
                             </Trigger>
 
                         </ControlTemplate.Triggers>
 
                     </ControlTemplate>
-
                 </Setter.Value>
-
             </Setter>
 
         </Style>
@@ -189,11 +139,9 @@
     <Grid>
 
         <Grid.RowDefinitions>
-
             <RowDefinition Height="74"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="42"/>
-
         </Grid.RowDefinitions>
 
 
@@ -207,6 +155,8 @@
                 BorderThickness="0,0,0,1">
 
             <Grid Margin="30,0">
+
+                <!-- LOGO AND TITLE -->
 
                 <StackPanel Orientation="Horizontal"
                             VerticalAlignment="Center">
@@ -224,7 +174,6 @@
                                    VerticalAlignment="Center"/>
 
                     </Border>
-
 
                     <StackPanel Margin="13,0,0,0"
                                 VerticalAlignment="Center">
@@ -244,17 +193,31 @@
                 </StackPanel>
 
 
-                <Border HorizontalAlignment="Right"
-                        VerticalAlignment="Center"
-                        Background="#F1F6FC"
-                        CornerRadius="8"
-                        Padding="10,5">
+                <!-- LOGOUT AND VERSION -->
 
-                    <TextBlock Text="v1.0"
-                               FontSize="11"
-                               Foreground="#728198"/>
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center">
 
-                </Border>
+                    <Button x:Name="LogoutButton"
+                            Content="Выйти"
+                            Style="{StaticResource ProviderButton}"
+                            Padding="14,6"
+                            Margin="0,0,12,0"
+                            Visibility="Collapsed"
+                            Click="LogoutButton_Click"/>
+
+                    <Border Background="#F1F6FC"
+                            CornerRadius="8"
+                            Padding="10,5">
+
+                        <TextBlock Text="v1.0"
+                                   FontSize="11"
+                                   Foreground="#728198"/>
+
+                    </Border>
+
+                </StackPanel>
 
             </Grid>
 
@@ -276,12 +239,10 @@
                   Margin="45">
 
                 <Grid.RowDefinitions>
-
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="30"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
-
                 </Grid.RowDefinitions>
 
 
@@ -315,50 +276,50 @@
 
                     <StackPanel Orientation="Horizontal">
 
-
                         <!-- VK -->
 
                         <Button x:Name="VkButton"
-        Style="{StaticResource ProviderButton}"
-        Width="205"
-        Height="66"
-        Click="VkButton_Click">
+                                Style="{StaticResource ProviderButton}"
+                                Width="205"
+                                Height="66"
+                                Click="VkButton_Click">
 
                             <StackPanel Orientation="Horizontal">
 
                                 <Border Width="38"
-                Height="38"
-                Background="#2688EB"
-                CornerRadius="10">
+                                        Height="38"
+                                        Background="#2688EB"
+                                        CornerRadius="10">
 
                                     <TextBlock Text="VK"
-                       FontWeight="Bold"
-                       FontSize="12"
-                       Foreground="White"
-                       HorizontalAlignment="Center"
-                       VerticalAlignment="Center"/>
+                                               FontWeight="Bold"
+                                               FontSize="12"
+                                               Foreground="White"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"/>
 
                                 </Border>
 
                                 <StackPanel Margin="12,0,0,0"
-                    VerticalAlignment="Center">
+                                            VerticalAlignment="Center">
 
                                     <TextBlock Text="Музыка VK"
-                       FontWeight="SemiBold"
-                       FontSize="14"
-                       Foreground="#172033"/>
+                                               FontWeight="SemiBold"
+                                               FontSize="14"
+                                               Foreground="#172033"/>
 
                                     <TextBlock x:Name="VkStatusText"
-                       Text="Не авторизован"
-                       FontSize="11"
-                       Foreground="#8A96A8"
-                       Margin="0,3,0,0"/>
+                                               Text="Не авторизован"
+                                               FontSize="11"
+                                               Foreground="#8A96A8"
+                                               Margin="0,3,0,0"/>
 
                                 </StackPanel>
 
                             </StackPanel>
 
                         </Button>
+
 
                         <!-- YANDEX -->
 
@@ -383,7 +344,6 @@
                                                VerticalAlignment="Center"/>
 
                                 </Border>
-
 
                                 <StackPanel Margin="12,0,0,0"
                                             VerticalAlignment="Center">
@@ -424,7 +384,6 @@
                         <StackPanel HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
                                     Width="520">
-
 
                             <Border Width="76"
                                     Height="76"
