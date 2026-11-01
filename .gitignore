@@ -1,0 +1,30 @@
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
+bin/
+obj/
+
+# Rider / JetBrains IDE
+.idea/
+*.iml
+
+# Logs
+*.log
+
+# NuGet packages
+*.nupkg
+*.snupkg
+packages/
+*.nuspec
+
+# Other
+launchSettings.json
+
+# React / Vite build
+userservice-web/node_modules/
+userservice-web/dist/

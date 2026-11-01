@@ -31,16 +31,12 @@ namespace MusicDownloader.WPF
 
         private VkServices? _vkServices;
 
-        public MainWindow()
+        public MainWindow(VkTokenStorage vkTokenStorage,IMusicDownloader musicDownloader)
         {
             InitializeComponent();
 
-            _vkTokenStorage =
-                new VkTokenStorage();
-
-            _musicDownloader =
-                new VkMusicDownloader(
-                    new HttpClient());
+            _vkTokenStorage = vkTokenStorage;
+            _musicDownloader = musicDownloader;
 
             Loaded += MainWindow_Loaded;
         }

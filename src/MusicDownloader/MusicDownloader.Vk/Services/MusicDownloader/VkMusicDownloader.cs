@@ -1,6 +1,9 @@
-﻿using MusicDownloader.Vk.Services.MusicDownloader.Models;
+﻿using Microsoft.Extensions.Logging;
+using MusicDownloader.Vk.Services.MusicDownloader.Models;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,104 +14,196 @@ namespace MusicDownloader.Vk.Services.MusicDownloader
     public class VkMusicDownloader : IMusicDownloader
     {
         private readonly HttpClient _httpClient;
-        private readonly Random _random = new();
+        private readonly ILogger<VkMusicDownloader> _logger;
 
-        public VkMusicDownloader(HttpClient httpClient)
+        private const int MaxConcurrentDownloads = 10;
+
+        public VkMusicDownloader(
+            HttpClient httpClient,
+            ILogger<VkMusicDownloader> logger)
         {
             _httpClient = httpClient;
+            _logger = logger;
+
             _httpClient.Timeout = TimeSpan.FromMinutes(5);
         }
 
         public async Task<MusicDownloadResult> DownloadAsync(
-            IReadOnlyCollection<Audio> tracks,
-            string outputDirectory,
-            IProgress<MusicDownloadProgress>? progress = null,
-            CancellationToken cancellationToken = default)
+     IReadOnlyCollection<Audio> tracks,
+     string outputDirectory,
+     IProgress<MusicDownloadProgress>? progress = null,
+     CancellationToken cancellationToken = default)
         {
-            Directory.CreateDirectory(outputDirectory);
-
             var downloaded = 0;
             var skipped = 0;
             var errors = 0;
 
-            var index = 0;
+            var stopwatch = Stopwatch.StartNew();
 
-            foreach (var track in tracks)
+            using var semaphore = new SemaphoreSlim(MaxConcurrentDownloads);
+
+            // Защита от одновременной записи в один файл.
+            var fileLocks = new ConcurrentDictionary<string, SemaphoreSlim>(
+                StringComparer.OrdinalIgnoreCase);
+
+            _logger.LogInformation(
+                "Начало загрузки музыки. Треков: {TrackCount}. Параллельность: {Concurrency}. Директория: {OutputDirectory}",
+                tracks.Count,
+                MaxConcurrentDownloads,
+                outputDirectory);
+
+            try
             {
-                cancellationToken.ThrowIfCancellationRequested();
+                Directory.CreateDirectory(outputDirectory);
 
-                index++;
-
-                if (track == null)
+                var tasks = tracks.Select(async (track, index) =>
                 {
-                    errors++;
-                    continue;
-                }
+                    var current = index + 1;
 
-                var artist = string.IsNullOrWhiteSpace(track.Artist)
-                    ? "Unknown Artist"
-                    : track.Artist.Trim();
+                    await semaphore.WaitAsync(cancellationToken);
 
-                var title = string.IsNullOrWhiteSpace(track.Title)
-                    ? $"Unknown Track {index}"
-                    : track.Title.Trim();
+                    try
+                    {
+                        if (track == null)
+                        {
+                            Interlocked.Increment(ref errors);
 
-                if (string.IsNullOrWhiteSpace(track.Url.ToString()))
+                            _logger.LogWarning(
+                                "Пустой объект трека. Индекс: {Index}",
+                                current);
+
+                            return;
+                        }
+
+                        var artist = string.IsNullOrWhiteSpace(track.Artist)
+                            ? "Unknown Artist"
+                            : track.Artist.Trim();
+
+                        var title = string.IsNullOrWhiteSpace(track.Title)
+                            ? $"Unknown Track {current}"
+                            : track.Title.Trim();
+
+                        var url = track.Url?.ToString();
+
+                        if (string.IsNullOrWhiteSpace(url))
+                        {
+                            Interlocked.Increment(ref skipped);
+
+                            _logger.LogWarning(
+                                "Трек пропущен из-за отсутствия URL: {Artist} - {Title}",
+                                artist,
+                                title);
+
+                            return;
+                        }
+
+                        var fileName = CreateFileName(artist, title);
+
+                        var filePath = Path.Combine(
+                            outputDirectory,
+                            fileName);
+
+                        // Для одинаковых названий файлов загрузка будет последовательной.
+                        var fileLock = fileLocks.GetOrAdd(
+                            filePath,
+                            _ => new SemaphoreSlim(1, 1));
+
+                        await fileLock.WaitAsync(cancellationToken);
+
+                        try
+                        {
+                            if (File.Exists(filePath))
+                            {
+                                Interlocked.Increment(ref skipped);
+
+                                _logger.LogDebug(
+                                    "Трек пропущен, файл уже существует: {FilePath}",
+                                    filePath);
+
+                                return;
+                            }
+
+                            // У каждой загрузки собственный временный файл.
+                            var tempFilePath = Path.Combine(
+                                outputDirectory,
+                                $".{Guid.NewGuid():N}.part");
+
+                            var success = await DownloadTrackAsync(
+                                url,
+                                filePath,
+                                tempFilePath,
+                                artist,
+                                title,
+                                current,
+                                tracks.Count,
+                                progress,
+                                cancellationToken);
+
+                            if (success)
+                            {
+                                Interlocked.Increment(ref downloaded);
+                            }
+                            else
+                            {
+                                Interlocked.Increment(ref errors);
+                            }
+                        }
+                        finally
+                        {
+                            fileLock.Release();
+                        }
+                    }
+                    finally
+                    {
+                        semaphore.Release();
+                    }
+                }).ToArray();
+
+                await Task.WhenAll(tasks);
+
+                stopwatch.Stop();
+
+                var result = new MusicDownloadResult(
+                    downloaded,
+                    skipped,
+                    errors);
+
+                _logger.LogInformation(
+                    "Загрузка завершена за {Elapsed}. Загружено: {Downloaded}, пропущено: {Skipped}, ошибок: {Errors}, всего: {Total}",
+                    stopwatch.Elapsed,
+                    downloaded,
+                    skipped,
+                    errors,
+                    tracks.Count);
+
+                return result;
+            }
+            catch (OperationCanceledException)
+                when (cancellationToken.IsCancellationRequested)
+            {
+                _logger.LogInformation(
+                    "Загрузка отменена. Загружено: {Downloaded}, пропущено: {Skipped}, ошибок: {Errors}",
+                    downloaded,
+                    skipped,
+                    errors);
+
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "Критическая ошибка загрузки музыки");
+
+                throw;
+            }
+            finally
+            {
+                foreach (var fileLock in fileLocks.Values)
                 {
-                    skipped++;
-                    continue;
-                }
-
-                var fileName = CreateFileName(
-                    artist,
-                    title);
-
-                var filePath = Path.Combine(
-                    outputDirectory,
-                    fileName);
-
-                var tempFilePath = filePath + ".part";
-
-                if (File.Exists(filePath))
-                {
-                    skipped++;
-                    continue;
-                }
-
-                DeleteTempFile(tempFilePath);
-
-                var success = await DownloadTrackAsync(
-                    track.Url.ToString(),
-                    filePath,
-                    tempFilePath,
-                    artist,
-                    title,
-                    index,
-                    tracks.Count,
-                    progress,
-                    cancellationToken);
-
-                if (success)
-                    downloaded++;
-                else
-                    errors++;
-
-                if (success &&
-                    index < tracks.Count &&
-                    !cancellationToken.IsCancellationRequested)
-                {
-                    var delay = _random.Next(2000, 4000);
-
-                    await Task.Delay(
-                        delay,
-                        cancellationToken);
+                    fileLock.Dispose();
                 }
             }
-
-            return new MusicDownloadResult(
-                downloaded,
-                skipped,
-                errors);
         }
 
         private async Task<bool> DownloadTrackAsync(
@@ -122,28 +217,30 @@ namespace MusicDownloader.Vk.Services.MusicDownloader
             IProgress<MusicDownloadProgress>? progress,
             CancellationToken cancellationToken)
         {
-            for (var attempt = 1; attempt <= 3; attempt++)
+            Exception? lastException = null;
+
+            try
             {
-                cancellationToken.ThrowIfCancellationRequested();
-
-                try
+                for (var attempt = 1; attempt <= 3; attempt++)
                 {
-                    using var response = await _httpClient.GetAsync(
-                        url,
-                        HttpCompletionOption.ResponseHeadersRead,
-                        cancellationToken);
+                    cancellationToken.ThrowIfCancellationRequested();
 
-                    response.EnsureSuccessStatusCode();
-
-                    var totalBytes =
-                        response.Content.Headers.ContentLength;
-
-                    await using var sourceStream =
-                        await response.Content.ReadAsStreamAsync(
+                    try
+                    {
+                        using var response = await _httpClient.GetAsync(
+                            url,
+                            HttpCompletionOption.ResponseHeadersRead,
                             cancellationToken);
 
-                    await using var fileStream =
-                        new FileStream(
+                        response.EnsureSuccessStatusCode();
+
+                        var totalBytes = response.Content.Headers.ContentLength;
+
+                        await using var sourceStream =
+                            await response.Content.ReadAsStreamAsync(
+                                cancellationToken);
+
+                        await using var fileStream = new FileStream(
                             tempFilePath,
                             FileMode.Create,
                             FileAccess.Write,
@@ -151,21 +248,40 @@ namespace MusicDownloader.Vk.Services.MusicDownloader
                             bufferSize: 81920,
                             useAsync: true);
 
-                    var buffer = new byte[81920];
+                        var buffer = new byte[81920];
 
-                    long bytesDownloaded = 0;
+                        long bytesDownloaded = 0;
 
-                    int bytesRead;
+                        int bytesRead;
 
-                    while ((bytesRead = await sourceStream.ReadAsync(
-                               buffer,
-                               cancellationToken)) > 0)
-                    {
-                        await fileStream.WriteAsync(
-                            buffer.AsMemory(0, bytesRead),
-                            cancellationToken);
+                        while ((bytesRead = await sourceStream.ReadAsync(
+                                   buffer,
+                                   cancellationToken)) > 0)
+                        {
+                            await fileStream.WriteAsync(
+                                buffer.AsMemory(0, bytesRead),
+                                cancellationToken);
 
-                        bytesDownloaded += bytesRead;
+                            bytesDownloaded += bytesRead;
+
+                            progress?.Report(
+                                new MusicDownloadProgress(
+                                    current,
+                                    total,
+                                    artist,
+                                    title,
+                                    bytesDownloaded,
+                                    totalBytes));
+                        }
+
+                        await fileStream.FlushAsync(cancellationToken);
+
+                        fileStream.Close();
+
+                        File.Move(
+                            tempFilePath,
+                            filePath,
+                            overwrite: false);
 
                         progress?.Report(
                             new MusicDownloadProgress(
@@ -173,62 +289,90 @@ namespace MusicDownloader.Vk.Services.MusicDownloader
                                 total,
                                 artist,
                                 title,
-                                bytesDownloaded,
-                                totalBytes));
-                    }
+                                totalBytes ?? bytesDownloaded,
+                                totalBytes ?? bytesDownloaded));
 
-                    await fileStream.FlushAsync(
-                        cancellationToken);
-
-                    fileStream.Close();
-
-                    File.Move(
-                        tempFilePath,
-                        filePath,
-                        overwrite: false);
-
-                    progress?.Report(
-                        new MusicDownloadProgress(
+                        _logger.LogInformation(
+                            "Трек успешно скачан [{Current}/{Total}]: {Artist} - {Title}. Размер: {Bytes} байт",
                             current,
                             total,
                             artist,
                             title,
-                            totalBytes ?? bytesDownloaded,
-                            totalBytes ?? bytesDownloaded));
+                            bytesDownloaded);
 
-                    return true;
-                }
-                catch (OperationCanceledException)
-                {
-                    if (cancellationToken.IsCancellationRequested)
-                        throw;
-                }
-                catch (HttpRequestException)
-                {
-                    // retry
-                }
-                catch (IOException)
-                {
-                    // retry
-                }
-                catch (Exception)
-                {
-                    // retry
-                }
+                        return true;
+                    }
+                    catch (OperationCanceledException ex)
+                    {
+                        if (cancellationToken.IsCancellationRequested)
+                            throw;
 
-                if (attempt < 3)
-                {
-                    var delay = TimeSpan.FromSeconds(
-                        Math.Pow(2, attempt) +
-                        _random.NextDouble());
+                        lastException = ex;
 
-                    await Task.Delay(
-                        delay,
-                        cancellationToken);
+                        _logger.LogWarning(
+                            ex,
+                            "Таймаут при скачивании трека {Artist} - {Title}. Попытка {Attempt}/3",
+                            artist,
+                            title,
+                            attempt);
+                    }
+                    catch (HttpRequestException ex)
+                    {
+                        lastException = ex;
+
+                        _logger.LogWarning(
+                            ex,
+                            "HTTP-ошибка при скачивании {Artist} - {Title}. Попытка {Attempt}/3. Код ответа: {StatusCode}",
+                            artist,
+                            title,
+                            attempt,
+                            ex.StatusCode);
+                    }
+                    catch (IOException ex)
+                    {
+                        lastException = ex;
+
+                        _logger.LogWarning(
+                            ex,
+                            "Ошибка файловой системы при скачивании {Artist} - {Title}. Попытка {Attempt}/3",
+                            artist,
+                            title,
+                            attempt);
+                    }
+                    catch (Exception ex)
+                    {
+                        lastException = ex;
+
+                        _logger.LogWarning(
+                            ex,
+                            "Непредвиденная ошибка при скачивании {Artist} - {Title}. Попытка {Attempt}/3",
+                            artist,
+                            title,
+                            attempt);
+                    }
                 }
+            }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+            {
+                DeleteTempFile(tempFilePath);
+
+                _logger.LogInformation(
+                    "Скачивание трека отменено: {Artist} - {Title}",
+                    artist,
+                    title);
+
+                throw;
             }
 
             DeleteTempFile(tempFilePath);
+
+            _logger.LogError(
+                lastException,
+                "Не удалось скачать трек после 3 попыток [{Current}/{Total}]: {Artist} - {Title}",
+                current,
+                total,
+                artist,
+                title);
 
             return false;
         }
@@ -237,37 +381,36 @@ namespace MusicDownloader.Vk.Services.MusicDownloader
             string artist,
             string title)
         {
-            var fileName =
-                $"{artist} - {title}.mp3";
+            var fileName = $"{artist} - {title}.mp3";
 
-            foreach (var invalidChar in
-                     Path.GetInvalidFileNameChars())
+            foreach (var invalidChar in Path.GetInvalidFileNameChars())
             {
-                fileName = fileName.Replace(
-                    invalidChar,
-                    '_');
+                fileName = fileName.Replace(invalidChar, '_');
             }
 
             fileName = fileName.Trim();
 
             if (fileName.Length > 200)
             {
-                fileName = fileName[..200] + ".mp3";
+                fileName = fileName[..196] + ".mp3";
             }
 
             return fileName;
         }
 
-        private static void DeleteTempFile(string path)
+        private void DeleteTempFile(string path)
         {
             try
             {
                 if (File.Exists(path))
                     File.Delete(path);
             }
-            catch
+            catch (Exception ex)
             {
-                // Ничего не делаем.
+                _logger.LogWarning(
+                    ex,
+                    "Не удалось удалить временный файл: {FilePath}",
+                    path);
             }
         }
     }
