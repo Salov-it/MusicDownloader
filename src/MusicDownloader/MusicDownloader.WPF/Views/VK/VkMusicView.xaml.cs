@@ -21,6 +21,7 @@ using System.Windows.Shapes;
 using VkNet.Model;
 using Button = System.Windows.Controls.Button;
 using Forms = System.Windows.Forms;
+using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using MessageBox = System.Windows.MessageBox;
 using Path = System.IO.Path;
 using UserControl = System.Windows.Controls.UserControl;
@@ -422,5 +423,6 @@ namespace MusicDownloader.WPF.Views.VK
                 mainWindow.ShowMainMenu();
             }
         }
+
     }
 }

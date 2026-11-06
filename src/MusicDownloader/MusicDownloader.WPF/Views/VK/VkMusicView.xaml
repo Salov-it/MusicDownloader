@@ -11,40 +11,20 @@
 
     <UserControl.Resources>
 
-        <!-- ====================================================== -->
         <!-- PRIMARY BUTTON -->
-        <!-- ====================================================== -->
 
-        <Style x:Key="PrimaryButton"
-               TargetType="Button">
-
-            <Setter Property="Background"
-                    Value="#2688EB"/>
-
-            <Setter Property="Foreground"
-                    Value="White"/>
-
-            <Setter Property="BorderThickness"
-                    Value="0"/>
-
-            <Setter Property="FontSize"
-                    Value="13"/>
-
-            <Setter Property="FontWeight"
-                    Value="SemiBold"/>
-
-            <Setter Property="Padding"
-                    Value="18,10"/>
-
-            <Setter Property="Cursor"
-                    Value="Hand"/>
+        <Style x:Key="PrimaryButton" TargetType="Button">
+            <Setter Property="Background" Value="#2688EB"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="18,10"/>
+            <Setter Property="Cursor" Value="Hand"/>
 
             <Setter Property="Template">
-
                 <Setter.Value>
-
                     <ControlTemplate TargetType="Button">
-
                         <Border x:Name="Border"
                                 Background="{TemplateBinding Background}"
                                 CornerRadius="10"
@@ -57,82 +37,45 @@
                         </Border>
 
                         <ControlTemplate.Triggers>
-
-                            <Trigger Property="IsMouseOver"
-                                     Value="True">
-
+                            <Trigger Property="IsMouseOver" Value="True">
                                 <Setter TargetName="Border"
                                         Property="Background"
                                         Value="#1976D2"/>
-
                             </Trigger>
 
-                            <Trigger Property="IsPressed"
-                                     Value="True">
-
+                            <Trigger Property="IsPressed" Value="True">
                                 <Setter TargetName="Border"
                                         Property="Background"
                                         Value="#1565C0"/>
-
                             </Trigger>
 
-                            <Trigger Property="IsEnabled"
-                                     Value="False">
-
+                            <Trigger Property="IsEnabled" Value="False">
                                 <Setter TargetName="Border"
                                         Property="Opacity"
                                         Value="0.45"/>
-
                             </Trigger>
-
                         </ControlTemplate.Triggers>
-
                     </ControlTemplate>
-
                 </Setter.Value>
-
             </Setter>
-
         </Style>
 
 
-        <!-- ====================================================== -->
         <!-- SECONDARY BUTTON -->
-        <!-- ====================================================== -->
 
-        <Style x:Key="SecondaryButton"
-               TargetType="Button">
-
-            <Setter Property="Background"
-                    Value="#FFFFFF"/>
-
-            <Setter Property="Foreground"
-                    Value="#273449"/>
-
-            <Setter Property="BorderBrush"
-                    Value="#E2E8F0"/>
-
-            <Setter Property="BorderThickness"
-                    Value="1"/>
-
-            <Setter Property="FontSize"
-                    Value="13"/>
-
-            <Setter Property="FontWeight"
-                    Value="SemiBold"/>
-
-            <Setter Property="Padding"
-                    Value="16,10"/>
-
-            <Setter Property="Cursor"
-                    Value="Hand"/>
+        <Style x:Key="SecondaryButton" TargetType="Button">
+            <Setter Property="Background" Value="#FFFFFF"/>
+            <Setter Property="Foreground" Value="#273449"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="16,10"/>
+            <Setter Property="Cursor" Value="Hand"/>
 
             <Setter Property="Template">
-
                 <Setter.Value>
-
                     <ControlTemplate TargetType="Button">
-
                         <Border x:Name="Border"
                                 Background="{TemplateBinding Background}"
                                 BorderBrush="{TemplateBinding BorderBrush}"
@@ -147,10 +90,7 @@
                         </Border>
 
                         <ControlTemplate.Triggers>
-
-                            <Trigger Property="IsMouseOver"
-                                     Value="True">
-
+                            <Trigger Property="IsMouseOver" Value="True">
                                 <Setter TargetName="Border"
                                         Property="Background"
                                         Value="#F7FAFE"/>
@@ -158,72 +98,40 @@
                                 <Setter TargetName="Border"
                                         Property="BorderBrush"
                                         Value="#C9D9EC"/>
-
                             </Trigger>
 
-                            <Trigger Property="IsPressed"
-                                     Value="True">
-
+                            <Trigger Property="IsPressed" Value="True">
                                 <Setter TargetName="Border"
                                         Property="Background"
                                         Value="#EEF6FF"/>
-
                             </Trigger>
 
-                            <Trigger Property="IsEnabled"
-                                     Value="False">
-
+                            <Trigger Property="IsEnabled" Value="False">
                                 <Setter TargetName="Border"
                                         Property="Opacity"
                                         Value="0.45"/>
-
                             </Trigger>
-
                         </ControlTemplate.Triggers>
-
                     </ControlTemplate>
-
                 </Setter.Value>
-
             </Setter>
-
         </Style>
 
 
-        <!-- ====================================================== -->
         <!-- DOWNLOAD TRACK BUTTON -->
-        <!-- ====================================================== -->
 
-        <Style x:Key="TrackDownloadButton"
-               TargetType="Button">
-
-            <Setter Property="Width"
-                    Value="38"/>
-
-            <Setter Property="Height"
-                    Value="38"/>
-
-            <Setter Property="Background"
-                    Value="#EAF4FF"/>
-
-            <Setter Property="Foreground"
-                    Value="#2688EB"/>
-
-            <Setter Property="BorderThickness"
-                    Value="0"/>
-
-            <Setter Property="Cursor"
-                    Value="Hand"/>
-
-            <Setter Property="FontSize"
-                    Value="18"/>
+        <Style x:Key="TrackDownloadButton" TargetType="Button">
+            <Setter Property="Width" Value="38"/>
+            <Setter Property="Height" Value="38"/>
+            <Setter Property="Background" Value="#EAF4FF"/>
+            <Setter Property="Foreground" Value="#2688EB"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontSize" Value="18"/>
 
             <Setter Property="Template">
-
                 <Setter.Value>
-
                     <ControlTemplate TargetType="Button">
-
                         <Border x:Name="Border"
                                 Background="{TemplateBinding Background}"
                                 CornerRadius="10">
@@ -235,176 +143,104 @@
                         </Border>
 
                         <ControlTemplate.Triggers>
-
-                            <Trigger Property="IsMouseOver"
-                                     Value="True">
-
+                            <Trigger Property="IsMouseOver" Value="True">
                                 <Setter TargetName="Border"
                                         Property="Background"
                                         Value="#D8ECFF"/>
-
                             </Trigger>
 
-                            <Trigger Property="IsPressed"
-                                     Value="True">
-
+                            <Trigger Property="IsPressed" Value="True">
                                 <Setter TargetName="Border"
                                         Property="Background"
                                         Value="#C7E3FF"/>
-
                             </Trigger>
 
-                            <Trigger Property="IsEnabled"
-                                     Value="False">
-
+                            <Trigger Property="IsEnabled" Value="False">
                                 <Setter TargetName="Border"
                                         Property="Opacity"
                                         Value="0.45"/>
-
                             </Trigger>
-
                         </ControlTemplate.Triggers>
-
                     </ControlTemplate>
-
                 </Setter.Value>
-
             </Setter>
-
         </Style>
 
 
-        <!-- ====================================================== -->
         <!-- PATH BOX -->
-        <!-- ====================================================== -->
 
-        <Style x:Key="PathBox"
-               TargetType="TextBox">
-
-            <Setter Property="Background"
-                    Value="#F7F9FC"/>
-
-            <Setter Property="Foreground"
-                    Value="#455468"/>
-
-            <Setter Property="BorderThickness"
-                    Value="0"/>
-
-            <Setter Property="Padding"
-                    Value="12,9"/>
-
-            <Setter Property="FontSize"
-                    Value="12"/>
-
+        <Style x:Key="PathBox" TargetType="TextBox">
+            <Setter Property="Background" Value="#F7F9FC"/>
+            <Setter Property="Foreground" Value="#455468"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="12,9"/>
+            <Setter Property="FontSize" Value="12"/>
         </Style>
 
 
-        <!-- ====================================================== -->
         <!-- PROGRESS BAR -->
-        <!-- ====================================================== -->
 
-        <Style x:Key="DownloadProgressBar"
-               TargetType="ProgressBar">
-
-            <Setter Property="Height"
-                    Value="5"/>
-
-            <Setter Property="Minimum"
-                    Value="0"/>
-
-            <Setter Property="Maximum"
-                    Value="100"/>
-
-            <Setter Property="Background"
-                    Value="#E8EEF5"/>
-
-            <Setter Property="Foreground"
-                    Value="#2688EB"/>
-
-            <Setter Property="BorderThickness"
-                    Value="0"/>
+        <Style x:Key="DownloadProgressBar" TargetType="ProgressBar">
+            <Setter Property="Height" Value="5"/>
+            <Setter Property="Minimum" Value="0"/>
+            <Setter Property="Maximum" Value="100"/>
+            <Setter Property="Background" Value="#E8EEF5"/>
+            <Setter Property="Foreground" Value="#2688EB"/>
+            <Setter Property="BorderThickness" Value="0"/>
 
             <Setter Property="Template">
-
                 <Setter.Value>
-
                     <ControlTemplate TargetType="ProgressBar">
-
                         <Border Background="{TemplateBinding Background}"
                                 CornerRadius="3">
 
                             <Grid>
-
                                 <Border x:Name="Indicator"
                                         Background="{TemplateBinding Foreground}"
                                         CornerRadius="3"
                                         HorizontalAlignment="Left"/>
-
                             </Grid>
 
                         </Border>
 
                         <ControlTemplate.Triggers>
-
-                            <Trigger Property="IsIndeterminate"
-                                     Value="True">
-
+                            <Trigger Property="IsIndeterminate" Value="True">
                                 <Setter TargetName="Indicator"
                                         Property="Width"
                                         Value="80"/>
-
                             </Trigger>
-
                         </ControlTemplate.Triggers>
-
                     </ControlTemplate>
-
                 </Setter.Value>
-
             </Setter>
-
         </Style>
 
     </UserControl.Resources>
 
 
-    <!-- ========================================================== -->
     <!-- MAIN -->
-    <!-- ========================================================== -->
 
     <Grid Margin="30">
 
         <Grid.RowDefinitions>
-
             <RowDefinition Height="Auto"/>
-
             <RowDefinition Height="18"/>
-
             <RowDefinition Height="Auto"/>
-
             <RowDefinition Height="18"/>
-
             <RowDefinition Height="*"/>
-
         </Grid.RowDefinitions>
 
 
-        <!-- ====================================================== -->
         <!-- HEADER -->
-        <!-- ====================================================== -->
 
         <Grid Grid.Row="0">
 
             <Grid.ColumnDefinitions>
-
                 <ColumnDefinition Width="*"/>
-
                 <ColumnDefinition Width="Auto"/>
-
                 <ColumnDefinition Width="Auto"/>
-
                 <ColumnDefinition Width="Auto"/>
-
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
 
@@ -428,7 +264,6 @@
                                    VerticalAlignment="Center"/>
 
                     </Border>
-
 
                     <StackPanel VerticalAlignment="Center">
 
@@ -462,10 +297,13 @@
                     Click="MainMenuButton_Click"/>
 
 
+      
+
+
             <!-- REFRESH -->
 
             <Button x:Name="LoadButton"
-                    Grid.Column="2"
+                    Grid.Column="3"
                     Content="Обновить"
                     Width="112"
                     Height="40"
@@ -477,7 +315,7 @@
             <!-- DOWNLOAD ALL -->
 
             <Button x:Name="DownloadAllButton"
-                    Grid.Column="3"
+                    Grid.Column="4"
                     Content="Скачать всё"
                     Width="130"
                     Height="40"
@@ -487,9 +325,7 @@
         </Grid>
 
 
-        <!-- ====================================================== -->
         <!-- SAVE DIRECTORY -->
-        <!-- ====================================================== -->
 
         <Border Grid.Row="2"
                 Background="White"
@@ -501,13 +337,9 @@
             <Grid>
 
                 <Grid.ColumnDefinitions>
-
                     <ColumnDefinition Width="190"/>
-
                     <ColumnDefinition Width="*"/>
-
                     <ColumnDefinition Width="Auto"/>
-
                 </Grid.ColumnDefinitions>
 
 
@@ -562,9 +394,7 @@
         </Border>
 
 
-        <!-- ====================================================== -->
         <!-- TRACKS CARD -->
-        <!-- ====================================================== -->
 
         <Border Grid.Row="4"
                 Background="White"
@@ -576,33 +406,15 @@
             <Grid>
 
                 <Grid.RowDefinitions>
-
-                    <!-- Заголовок -->
-
                     <RowDefinition Height="Auto"/>
-
-                    <!-- Небольшой отступ -->
-
                     <RowDefinition Height="8"/>
-
-                    <!-- Progress -->
-
                     <RowDefinition Height="Auto"/>
-
-                    <!-- Отступ -->
-
                     <RowDefinition Height="12"/>
-
-                    <!-- Список -->
-
                     <RowDefinition Height="*"/>
-
                 </Grid.RowDefinitions>
 
 
-                <!-- ================================================== -->
                 <!-- LIST HEADER -->
-                <!-- ================================================== -->
 
                 <Grid Grid.Row="0">
 
@@ -612,39 +424,30 @@
                                Foreground="#172033"
                                VerticalAlignment="Center"/>
 
-
                     <StackPanel HorizontalAlignment="Right"
-            VerticalAlignment="Center">
+                                VerticalAlignment="Center">
 
                         <TextBlock x:Name="StatusText"
-                           Text="Загрузка музыки..."
-                           FontSize="11"
-                           Foreground="#8995A7"
-                           HorizontalAlignment="Right"/>
+                                   Text="Загрузка музыки..."
+                                   FontSize="11"
+                                   Foreground="#8995A7"
+                                   HorizontalAlignment="Right"/>
 
                         <ProgressBar x:Name="DownloadProgressBar"
-                         Width="180"
-                         Height="5"
-                         Margin="0,6,0,0"
-                         Minimum="0"
-                         Maximum="100"
-                         Value="0"
-                         Visibility="Collapsed"/>       
+                                     Width="180"
+                                     Height="5"
+                                     Margin="0,6,0,0"
+                                     Minimum="0"
+                                     Maximum="100"
+                                     Value="0"
+                                     Visibility="Collapsed"/>
 
                     </StackPanel>
 
                 </Grid>
 
 
-                <!-- ================================================== -->
-                <!-- DOWNLOAD PROGRESS -->
-                <!-- ================================================== -->
-
-
-
-                <!-- ================================================== -->
-                <!-- LIST -->
-                <!-- ================================================== -->
+                <!-- TRACKS LIST -->
 
                 <ListBox x:Name="TracksList"
                          Grid.Row="4"
@@ -684,21 +487,14 @@
                                 <Grid>
 
                                     <Grid.ColumnDefinitions>
-
                                         <ColumnDefinition Width="42"/>
-
                                         <ColumnDefinition Width="*"/>
-
                                         <ColumnDefinition Width="60"/>
-
                                         <ColumnDefinition Width="42"/>
-
                                     </Grid.ColumnDefinitions>
 
 
-                                    <!-- ================================================== -->
                                     <!-- MUSIC ICON -->
-                                    <!-- ================================================== -->
 
                                     <Border Grid.Column="0"
                                             Width="38"
@@ -716,9 +512,7 @@
                                     </Border>
 
 
-                                    <!-- ================================================== -->
                                     <!-- TRACK INFO -->
-                                    <!-- ================================================== -->
 
                                     <StackPanel Grid.Column="1"
                                                 Margin="12,0,10,0"
@@ -739,9 +533,7 @@
                                     </StackPanel>
 
 
-                                    <!-- ================================================== -->
                                     <!-- DURATION -->
-                                    <!-- ================================================== -->
 
                                     <TextBlock Grid.Column="2"
                                                Text="{Binding Duration}"
@@ -752,9 +544,7 @@
                                                Margin="0,0,12,0"/>
 
 
-                                    <!-- ================================================== -->
                                     <!-- DOWNLOAD -->
-                                    <!-- ================================================== -->
 
                                     <Button Grid.Column="3"
                                             Content="↓"
@@ -773,9 +563,7 @@
                 </ListBox>
 
 
-                <!-- ================================================== -->
                 <!-- EMPTY -->
-                <!-- ================================================== -->
 
                 <StackPanel x:Name="EmptyState"
                             Grid.Row="4"
@@ -797,14 +585,12 @@
 
                     </Border>
 
-
                     <TextBlock Text="Музыка не найдена"
                                FontSize="15"
                                FontWeight="SemiBold"
                                Foreground="#172033"
                                HorizontalAlignment="Center"
                                Margin="0,14,0,0"/>
-
 
                     <TextBlock Text="В вашей музыкальной библиотеке пока нет треков."
                                FontSize="11"
